@@ -1,23 +1,21 @@
-# streamlit_app.py
-import streamlit as st
+# password_checker.py
+
+import tkinter as tk
+from tkinter import messagebox
 import re
 import random
 import string
-import tkinter as tk
-from tkinter import messagebox
-from utils import validate_password   # 👈 reuse your existing logic
 
-# ================== THEME COLORS =====================
-BG_MAIN = "#020617"       # Very dark background
-CARD_BG = "#020617"       # Card background
-CARD_INNER = "#0b1220"    # Inner panel
-ACCENT = "#6366f1"        # Indigo
-ACCENT_SOFT = "#4f46e5"
-ACCENT_GREEN = "#22c55e"  # Green
-ACCENT_RED = "#f97373"    # Red
-TEXT_PRIMARY = "#e5e7eb"  # Light text
-TEXT_MUTED = "#9ca3af"    # Muted text
-TEXT_DANGER = "#fca5a5"
+# 🚨 CHANGE 1: Import all necessary components from theme.py
+from theme import (
+    BG_MAIN, CARD_BG, CARD_INNER, ACCENT, ACCENT_SOFT, 
+    ACCENT_GREEN, ACCENT_RED, TEXT_PRIMARY, TEXT_MUTED, 
+    ACCENT_GREEN_HOVER, BUTTON_DARK, BUTTON_DARK_HOVER, TEXT_DARK,
+    TEXT_DANGER, # <--- THIS IS THE NEW LINE
+    add_hover_effect
+)
+# 🚨 DELETED: The entire local color block (BG_MAIN = "#020617"...)
+
 
 # ================== MAIN WINDOW ======================
 window = tk.Tk()
@@ -146,9 +144,9 @@ toggle_button = tk.Button(
     font=("Segoe UI", 9),
     bd=0,
     relief="flat",
-    bg="#111827",
+    bg=BUTTON_DARK, # Use imported color
     fg=TEXT_PRIMARY,
-    activebackground="#111827",
+    activebackground=BUTTON_DARK,
     activeforeground=TEXT_PRIMARY,
     padx=10,
     pady=4,
@@ -171,13 +169,7 @@ policy_label.pack(anchor="w", padx=15, pady=(0, 10))
 button_bar = tk.Frame(left_panel, bg=CARD_BG)
 button_bar.pack(fill="x", pady=(0, 10))
 
-def add_hover_effect(widget, normal_bg, hover_bg):
-    def on_enter(e):
-        widget.config(bg=hover_bg)
-    def on_leave(e):
-        widget.config(bg=normal_bg)
-    widget.bind("<Enter>", on_enter)
-    widget.bind("<Leave>", on_leave)
+# 🚨 DELETED: The local def add_hover_effect(...) function.
 
 check_button = tk.Button(
     button_bar,
@@ -201,9 +193,9 @@ clear_button = tk.Button(
     font=("Segoe UI", 10),
     bd=0,
     relief="flat",
-    bg="#111827",
+    bg=BUTTON_DARK,
     fg=TEXT_PRIMARY,
-    activebackground="#1f2937",
+    activebackground=BUTTON_DARK_HOVER,
     activeforeground=TEXT_PRIMARY,
     padx=14,
     pady=6,
@@ -218,19 +210,20 @@ generate_button = tk.Button(
     bd=0,
     relief="flat",
     bg=ACCENT_GREEN,
-    fg="black",
-    activebackground="#16a34a",
-    activeforeground="black",
+    fg=TEXT_DARK,
+    activebackground=ACCENT_GREEN_HOVER,
+    activeforeground=TEXT_DARK,
     padx=14,
     pady=6,
     cursor="hand2"
 )
 generate_button.grid(row=0, column=2, padx=(6, 0))
 
-add_hover_effect(check_button, ACCENT, ACCENT_SOFT)
-add_hover_effect(clear_button, "#111827", "#1f2937")
-add_hover_effect(generate_button, ACCENT_GREEN, "#16a34a")
-add_hover_effect(toggle_button, "#111827", "#1f2937")
+# 🚨 CHANGE 3: Update hover calls to use the imported function and specify foreground
+add_hover_effect(check_button, ACCENT, ACCENT_SOFT, default_fg="white", hover_fg="white")
+add_hover_effect(clear_button, BUTTON_DARK, BUTTON_DARK_HOVER, default_fg=TEXT_PRIMARY, hover_fg=TEXT_PRIMARY)
+add_hover_effect(generate_button, ACCENT_GREEN, ACCENT_GREEN_HOVER, default_fg=TEXT_DARK, hover_fg=TEXT_DARK)
+add_hover_effect(toggle_button, BUTTON_DARK, BUTTON_DARK_HOVER, default_fg=TEXT_PRIMARY, hover_fg=TEXT_PRIMARY)
 
 # ================== STRENGTH BAR & RESULT =============
 strength_panel = tk.Frame(left_panel, bg=CARD_BG)
@@ -271,7 +264,7 @@ suggestion_label = tk.Label(
 )
 suggestion_label.pack(pady=(4, 0))
 
-# ================== RIGHT PANEL – CHECKLIST =============
+# ================== RIGHT PANEL – CHECKLIST ============
 requirements_box = tk.Frame(right_panel, bg=CARD_INNER, bd=0, highlightthickness=1, highlightbackground="#1f2937")
 requirements_box.pack(fill="x", pady=(0, 10))
 
@@ -435,6 +428,7 @@ def update_strength_display(pw, show_warning=False):
     update_checklist(pw)
     draw_strength_bar(score)
 
+    # Note: ACCENT_GREEN is imported from theme.py
     if score == 5:
         strong_label["text"] = "✅ Excellent password! Hard to guess and brute-force."
         strong_label.config(fg=ACCENT_GREEN)
